@@ -100,12 +100,12 @@
                     </div>
                     <br>
 
-                    <div class="form-label-group">
-                        <label>Sélectionnez un Auteur</label>
-                        <g:select class="form-control" from="${tp.mbds.com.User.list()}"
-                                  name="user" optionKey="id" optionValue="username"
-                                  value="${this.saleAd.author.id}"/>
-                    </div>
+%{--                    <div class="form-label-group">--}%
+%{--                        <label>Sélectionnez un Auteur</label>--}%
+%{--                        <g:select class="form-control" from="${tp.mbds.com.User.list()}"--}%
+%{--                                  name="user" optionKey="id" optionValue="username"--}%
+%{--                                  value="${this.saleAd.author.id}"/>--}%
+%{--                    </div>--}%
                     <br>
 
                     <div class="form-label-group">

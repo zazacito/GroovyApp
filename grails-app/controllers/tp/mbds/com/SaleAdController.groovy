@@ -80,7 +80,7 @@ class SaleAdController {
         try {
             request.multipartFiles.eachWithIndex {
                 def mfile, int index ->
-                    def f = request.getFile('filename'+index)
+                    def f = request.getFile(mfile.key)
 
                     String charset = (('A'..'Z') + ('0'..'9')).join()
                     Integer length = 9
@@ -94,9 +94,6 @@ class SaleAdController {
             saleAd.description = params.description
             saleAd.longDescription = params.longDescription
             saleAd.price = Float.parseFloat(params.price)
-
-            saleAd.author = params.author
-
 
             saleAdService.save(saleAd)
 
