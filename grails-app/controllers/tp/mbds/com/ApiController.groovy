@@ -2,6 +2,7 @@ package tp.mbds.com
 
 import grails.converters.JSON
 import grails.converters.XML
+import org.apache.commons.lang.RandomStringUtils
 
 class ApiController {
     def index() {}
@@ -69,6 +70,19 @@ class ApiController {
                 }
                 break
             case "POST":
+                def userInstance = new User(username: request.JSON.username,
+                        password: request.JSON.password)
+
+                if (!userInstance.save(flush: true))
+                    return response.status = 400
+
+                UserRole.create(userInstance,Role.get(request.JSON.role), true)
+
+                response.withFormat {
+                    xml { render userInstance as XML }
+                    json { render userInstance as JSON }
+                }
+//                return response.status = 201
                 break
             default:
                 return response.status = 405
@@ -150,6 +164,42 @@ class ApiController {
                 }
                 break
             case "POST":
+                def saleAdInstance = new SaleAd(title: request.JSON.title,
+                        description: request.JSON.description,
+                        longDescription: request.JSON.longDescription,
+                        price: request.JSON.price)
+
+                // Recup les données base 64 de ta request
+                def filedata = request.JSON.filename
+                // Créer un fichier mémoire à base de ces données base 64
+                byte[] decoded = filedata.decodeBase64()
+
+                // Ajouter une random string
+                String charset = (('A'..'Z') + ('0'..'9')).join()
+                Integer length = 9
+                String randomString = RandomStringUtils.random(length, charset.toCharArray())
+
+                // Sauvegarde sur ton systeme de fichier
+                def file =new File(grailsApplication.config.tpmbds.illustrations.path + randomString +'.png')
+
+                file.withOutputStream {
+                    it.write decoded
+                }
+                saleAdInstance.addToIllustrations(new Illustration(filename: file.getName()  ))
+
+                def userInstance = User.get(request.JSON.author)
+
+                userInstance.addToSaleAds(saleAdInstance)
+
+                if (!userInstance.save(flush: true))
+                    return response.status = 400
+
+                response.withFormat {
+                    xml { render saleAdInstance as XML }
+                    json { render saleAdInstance as JSON }
+                }
+//                return response.status = 201
+                break
                 break
             default:
                 return response.status = 405
